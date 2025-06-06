@@ -1,0 +1,12 @@
+authorization_url = https://login.xero.com/identity/connect/authorize
+client_id = 226BBE55309C4E978FFC2EB865823433
+client_secret = tSniEWrmmj1lP6pzSgPHjztzHm5asfF1QDP5TFopdjZPA8Cg
+redirect_url = http://localhost/redirect_tbd
+refresh_token_file = secret_refresh_token.txt
+# Need accounting.transactions for Invoices, accounting.settings for Accounts,
+# and accounting.contacts for Contacts.
+scope = offline_access accounting.transactions accounting.settings accounting.contacts
+state = some_random_value
+tenant_url = https://api.xero.com/connections
+token_url = https://identity.xero.com/connect/token
+
