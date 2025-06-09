@@ -40,7 +40,8 @@ public class OauthCaller
     props = new Properties();
     try
     {
-      props.load(OauthCaller.class.getClassLoader().getResourceAsStream(propFile));
+      props.load(new FileInputStream(new File(propFile)));
+      //props.load(OauthCaller.class.getClassLoader().getResourceAsStream(propFile));
     }
     catch (IOException ioe)
     {
@@ -60,10 +61,15 @@ public class OauthCaller
 
     String start = "Basic ";
     String clientID = props.getProperty("client_id");
+    System.out.println("client ID: " + clientID);
     String clientSecret = props.getProperty("client_secret");
+    System.out.println("client secret: " + clientSecret);
     StringBuffer buffer = new StringBuffer(clientID).append(":").append(clientSecret);
     String encoded = Base64.getEncoder().encodeToString(buffer.toString().getBytes());
+    System.out.println("encoded: " + encoded);
     String authString = start.concat(encoded);
+    System.out.println("auth string: " + authString);
+    System.out.println("\n\n\n " );
     String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
 	    post(Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
     System.out.println(jsonResp);
