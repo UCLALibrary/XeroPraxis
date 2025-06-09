@@ -1,5 +1,9 @@
 package edu.ucla.xero.main;
 
+import com.google.gson.Gson;
+
+import edu.ucla.xero.beans.RefreshJson;
+
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -52,26 +56,27 @@ public class OauthCaller
 
   private static void getRefreshToken()
   {
+    Gson gson = new Gson();
     Client client = ClientBuilder.newClient();
-    WebTarget target = client.target(props.getProperty("authorization_url"));
+    WebTarget target = client.target(props.getProperty("token_url"));
 
     Form form = new Form();
     form.param("grant_type", "refresh_token");
-    form.param("refresh_token", "Zec0VuOFzLyojdcYF7KqlUNgfZyvzw67tDw2mpuGplA");
+    form.param("refresh_token", "pMBJebb7gCuxxKOsBD-3kAM5BpdEcIFXwF1vZDCe1To");
 
     String start = "Basic ";
     String clientID = props.getProperty("client_id");
-    System.out.println("client ID: " + clientID);
     String clientSecret = props.getProperty("client_secret");
-    System.out.println("client secret: " + clientSecret);
     StringBuffer buffer = new StringBuffer(clientID).append(":").append(clientSecret);
     String encoded = Base64.getEncoder().encodeToString(buffer.toString().getBytes());
-    System.out.println("encoded: " + encoded);
     String authString = start.concat(encoded);
-    System.out.println("auth string: " + authString);
-    System.out.println("\n\n\n " );
     String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
 	    post(Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
-    System.out.println(jsonResp);
+    //System.out.println(jsonResp);
+    RefreshJson bean = gson.fromJson(jsonResp, RefreshJson.class);
+    System.out.println(bean.getAccess_token());
+    System.out.println(bean.getExpires_in());
+    System.out.println(bean.getRefresh_token());
+    System.out.println(bean.getScope());
   }
 }
