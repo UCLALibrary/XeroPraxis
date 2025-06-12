@@ -2,6 +2,8 @@ package edu.ucla.xero.main;
 
 import com.google.gson.Gson;
 
+import edu.ucla.xero.beans.BasicInvoiceJson;
+import edu.ucla.xero.beans.InvoiceArrayJson;
 import edu.ucla.xero.beans.RefreshJson;
 import edu.ucla.xero.beans.TenantJson;
 
@@ -68,7 +70,7 @@ public class OauthCaller
 
     Form form = new Form();
     form.param("grant_type", "refresh_token");
-    form.param("refresh_token", "P9DGMd2iOcE6oili9JT2AO1o0hhe1iZkyYQmB8DY_ls");
+    form.param("refresh_token", "diuiG5LP-cA0JCNhblf9JcmkkKXJaHc3kONW7nwryzc");
 
     String start = "Basic ";
     String clientID = props.getProperty("client_id");
@@ -100,11 +102,20 @@ public class OauthCaller
   private static void getInvoices() {
     Gson gson = new Gson();
     Client client = ClientBuilder.newClient();
-    WebTarget target = client.target(props.getProperty("invoice_url"));
+    String url = props.getProperty("invoice_url").concat("/SR-66169-01?summaryOnly=true");
+    //WebTarget target = client.target(props.getProperty("invoice_url"));
+    WebTarget target = client.target(url);
     String authString = "Bearer ".concat(refreshBean.getAccess_token());
     String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
             header("xero-tenant-id", tenantBeans[0].getTenantId()).get(String.class);
-    System.out.println("\n\n" + jsonResp);
-    
+    InvoiceArrayJson invoiceArray = gson.fromJson(jsonResp, InvoiceArrayJson.class);
+    BasicInvoiceJson theInvoice = invoiceArray.getInvoices()[0];
+    System.out.println("\n\n" + theInvoice.getInvoiceNumber() + "\t" + theInvoice.getReference() + "\t" + theInvoice.getAmountDue());
+    //System.out.println("\n\n" + invoiceArray.getInvoices()[0].getInvoiceNumber() + "\t" + getInvoiceNumber().getReference() = 
+//		    "\t" + invoiceArray.getInvoices()[0].getAmountDue()); 
+    //System.out.println("\n\n" + jsonResp);
+    //String[] invoices = gson.fromJson(jsonResp,String[].class);
+    //System.out.println("\n\n" + invoices[0]);
   }
+
 }
