@@ -6,6 +6,7 @@ public class BasicInvoiceJson
   private String InvoiceNumber;
   private String Reference;
   private String AmountDue;
+  private LineItemJson[] LineItems;
 
   public BasicInvoiceJson()
   {
@@ -50,6 +51,16 @@ public class BasicInvoiceJson
   public String getAmountDue()
   {
     return AmountDue;
+  }
+
+  public void setLineItems(LineItemJson[] LineItems)
+  {
+    this.LineItems = LineItems;
+  }
+
+  public LineItemJson[] getLineItems()
+  {
+    return LineItems;
   }
 }
 

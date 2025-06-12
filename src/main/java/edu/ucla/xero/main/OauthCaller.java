@@ -70,7 +70,7 @@ public class OauthCaller
 
     Form form = new Form();
     form.param("grant_type", "refresh_token");
-    form.param("refresh_token", "diuiG5LP-cA0JCNhblf9JcmkkKXJaHc3kONW7nwryzc");
+    form.param("refresh_token", "nZLynBF7vGPQGFXNHnkrs48mdRvS-mIwKBM3_tL5BpA");
 
     String start = "Basic ";
     String clientID = props.getProperty("client_id");
@@ -109,6 +109,7 @@ public class OauthCaller
     String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
             header("xero-tenant-id", tenantBeans[0].getTenantId()).get(String.class);
     InvoiceArrayJson invoiceArray = gson.fromJson(jsonResp, InvoiceArrayJson.class);
+    System.out.println("\n\n" + jsonResp);
     BasicInvoiceJson theInvoice = invoiceArray.getInvoices()[0];
     System.out.println("\n\n" + theInvoice.getInvoiceNumber() + "\t" + theInvoice.getReference() + "\t" + theInvoice.getAmountDue());
     //System.out.println("\n\n" + invoiceArray.getInvoices()[0].getInvoiceNumber() + "\t" + getInvoiceNumber().getReference() = 
@@ -117,5 +118,14 @@ public class OauthCaller
     //String[] invoices = gson.fromJson(jsonResp,String[].class);
     //System.out.println("\n\n" + invoices[0]);
   }
-
+  
+  private static String getItemCode(String accountID) {
+    Client client = ClientBuilder.newClient();
+    String url = props.getProperty("accounts_id").concat(accountID);
+    WebTarget target = client.target(url);
+    String authString = "Bearer ".concat(refreshBean.getAccess_token());
+    String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
+                header("xero-tenant-id", tenantBeans[0].getTenantId()).get(String.class);
+    return null;
+  }
 }
