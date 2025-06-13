@@ -2,8 +2,11 @@ package edu.ucla.xero.main;
 
 import com.google.gson.Gson;
 
+import edu.ucla.xero.beans.AccountArrayJson;
+import edu.ucla.xero.beans.BasicAccountJson;
 import edu.ucla.xero.beans.BasicInvoiceJson;
 import edu.ucla.xero.beans.InvoiceArrayJson;
+import edu.ucla.xero.beans.LineItemJson;
 import edu.ucla.xero.beans.RefreshJson;
 import edu.ucla.xero.beans.TenantJson;
 
@@ -70,7 +73,7 @@ public class OauthCaller
 
     Form form = new Form();
     form.param("grant_type", "refresh_token");
-    form.param("refresh_token", "nZLynBF7vGPQGFXNHnkrs48mdRvS-mIwKBM3_tL5BpA");
+    form.param("refresh_token", "b2yjpVtFuUzY0OxvcLBEgWnfDojx89z4YWZLSn8VYN4");
 
     String start = "Basic ";
     String clientID = props.getProperty("client_id");
@@ -109,23 +112,25 @@ public class OauthCaller
     String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
             header("xero-tenant-id", tenantBeans[0].getTenantId()).get(String.class);
     InvoiceArrayJson invoiceArray = gson.fromJson(jsonResp, InvoiceArrayJson.class);
-    System.out.println("\n\n" + jsonResp);
+    //System.out.println("\n\n" + jsonResp);
     BasicInvoiceJson theInvoice = invoiceArray.getInvoices()[0];
     System.out.println("\n\n" + theInvoice.getInvoiceNumber() + "\t" + theInvoice.getReference() + "\t" + theInvoice.getAmountDue());
-    //System.out.println("\n\n" + invoiceArray.getInvoices()[0].getInvoiceNumber() + "\t" + getInvoiceNumber().getReference() = 
-//		    "\t" + invoiceArray.getInvoices()[0].getAmountDue()); 
-    //System.out.println("\n\n" + jsonResp);
-    //String[] invoices = gson.fromJson(jsonResp,String[].class);
-    //System.out.println("\n\n" + invoices[0]);
+    LineItemJson[] theLines = theInvoice.getLineItems();
+    for (LineItemJson line : theLines) {
+      System.out.println("\t" + line.getAccountID() + "\t" + line.getLineAmount() + "" + getItemCode(line.getAccountID()));
+    }
   }
   
   private static String getItemCode(String accountID) {
+    Gson gson = new Gson();
     Client client = ClientBuilder.newClient();
     String url = props.getProperty("accounts_id").concat(accountID);
     WebTarget target = client.target(url);
     String authString = "Bearer ".concat(refreshBean.getAccess_token());
     String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
                 header("xero-tenant-id", tenantBeans[0].getTenantId()).get(String.class);
-    return null;
+    AccountArrayJson theAccount = gson.fromJson(jsonResp, AccountArrayJson.class);
+    BasicAccountJson detail = theAccount.getAccounts()[0];
+    return detail.getName();
   }
 }
