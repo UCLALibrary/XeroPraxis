@@ -47,7 +47,8 @@ public class OauthCaller
     loadProperties(args[0]);
     getRefreshToken();
     getTenantID();
-    getInvoices();
+    //getInvoices();
+    getContacts();
   }
 
   private static void loadProperties(String propFile)
@@ -73,7 +74,7 @@ public class OauthCaller
 
     Form form = new Form();
     form.param("grant_type", "refresh_token");
-    form.param("refresh_token", "b2yjpVtFuUzY0OxvcLBEgWnfDojx89z4YWZLSn8VYN4");
+    form.param("refresh_token", "aZLOLb7KxyIweaWwqm03k2TZuhqou6pQ8XECK1n1ewA");
 
     String start = "Basic ";
     String clientID = props.getProperty("client_id");
@@ -105,14 +106,15 @@ public class OauthCaller
   private static void getInvoices() {
     Gson gson = new Gson();
     Client client = ClientBuilder.newClient();
-    String url = props.getProperty("invoice_url").concat("/SR-66169-01?summaryOnly=true");
+    //String url = props.getProperty("invoice_url").concat("/SR-66169-01?summaryOnly=true");
+    String url = props.getProperty("invoice_url").concat("?summaryOnly=truei&d87ContactIDs=f34a7-38cd-4c1a-a229-d2fdc8fe8f6c");
     //WebTarget target = client.target(props.getProperty("invoice_url"));
     WebTarget target = client.target(url);
     String authString = "Bearer ".concat(refreshBean.getAccess_token());
     String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
             header("xero-tenant-id", tenantBeans[0].getTenantId()).get(String.class);
     InvoiceArrayJson invoiceArray = gson.fromJson(jsonResp, InvoiceArrayJson.class);
-    //System.out.println("\n\n" + jsonResp);
+    System.out.println("\n\n" + jsonResp);
     BasicInvoiceJson theInvoice = invoiceArray.getInvoices()[0];
     System.out.println("\n\n" + theInvoice.getInvoiceNumber() + "\t" + theInvoice.getReference() + "\t" + theInvoice.getAmountDue());
     LineItemJson[] theLines = theInvoice.getLineItems();
@@ -132,5 +134,15 @@ public class OauthCaller
     AccountArrayJson theAccount = gson.fromJson(jsonResp, AccountArrayJson.class);
     BasicAccountJson detail = theAccount.getAccounts()[0];
     return detail.getName();
+  }
+
+  private static void getContacts() {
+    Client client = ClientBuilder.newClient();
+    String url = props.getProperty("contact_url");
+    WebTarget target = client.target(url);
+    String authString = "Bearer ".concat(refreshBean.getAccess_token());
+    String jsonResp = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization",authString).
+                header("xero-tenant-id", tenantBeans[0].getTenantId()).get(String.class);
+    System.out.println("\n\n" + jsonResp);
   }
 }
